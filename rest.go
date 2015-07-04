@@ -16,7 +16,7 @@ const (
 	tags = "cute+puppies"
 )
 
-func main() {
+func rest() {
 	image_url := endpoint + "&method=" + get_photos_method + "&api_key=" + api_key + "&text="+ tags + "&format=" + output_format + "&nojsoncallback=1&per_page=" + results_per_page
 	response, err := http.Get(image_url)
 	if err != nil {

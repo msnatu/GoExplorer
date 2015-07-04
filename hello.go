@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"regexp"
 	"errors"
-	"./import_packages"
 )
 
 type Page struct {
@@ -91,7 +90,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request) {
 
 
 /*** MAIN ****/
-func main() {
+func hello() {
 	http.HandleFunc("/view/", viewHandler)
 	http.HandleFunc("/edit/", editHandler)
 	http.HandleFunc("/save/", saveHandler)
