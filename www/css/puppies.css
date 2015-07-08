@@ -454,5 +454,46 @@ body {
 .body-container {
   padding: 20px;
   margin: 0 auto;
-  width: 80%
+  width: 948px;
+}
+
+.clr {
+  clear: both;
+}
+
+.puppy-image-container {
+  float: left;
+  margin: 3px;
+  border: 1px solid #a0a0a0;
+  border-radius: 5px;
+  position: relative;
+}
+
+.puppy-box {
+  display: block;
+  border-radius: 5px;
+}
+
+.puppy-image-upvote {
+  background: url('images/thumbs-up.png');
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  cursor: pointer;
+}
+
+.puppy-image-downvote {
+  background: url('images/thumbs-down.png');
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  cursor: pointer;
+}
+
+.puppy-image-container:hover .puppy-box {
+  opacity: 0.5;
 }

@@ -6,9 +6,9 @@ import (
 	"html/template"
 	"io/ioutil"
 	"os"
-//	"encoding/json"
 	"encoding/xml"
-//	"reflect"
+	"strings"
+	"bufio"
 )
 
 
@@ -16,7 +16,6 @@ const (
 	endpoint = "https://api.flickr.com/services/rest/?"
 	get_photos_method = "flickr.photos.search"
 	api_key = "4ef2fe2affcdd6e13218f5ddd0e2500d"
-	output_format = "json"
 	results_per_page = "10"
 	tags = "cute+puppies"
 )
@@ -50,6 +49,7 @@ var page_templates = template.Must(template.ParseFiles(
 
 
 /********************************************************/
+
 func main() {
 	http.Handle("/www/", http.StripPrefix("/www/", http.FileServer(http.Dir("www"))))
 	http.HandleFunc("/", loadHomePage)
@@ -60,7 +60,18 @@ func main() {
 func loadHomePage(w http.ResponseWriter, r *http.Request) {
 	p := &HomePage{Title: "Title", Body: "Body"}
 	renderTpl(w, "head", p)
-	getPuppies(w, p)
+	puppies := getPuppies(w, p)
+	fmt.Fprintf(w, puppies)
+	renderTpl(w, "page_body", p)
+
+//	content, _ := ioutil.ReadFile("votes.txt")
+//	lines := strings.Split(string(content), "\n")
+//	fmt.Println(lines)
+//	f, err := os.OpenFile("votes.txt", os.O_APPEND|os.O_WRONLY, 0600)
+//	defer f.Close()
+//	if _, err = f.WriteString("\neppudi"); err != nil {
+//		panic(err)
+//	}
 }
 
 func renderTpl(w http.ResponseWriter, tmpl string, p *HomePage) {
@@ -71,7 +82,8 @@ func renderTpl(w http.ResponseWriter, tmpl string, p *HomePage) {
 	}
 }
 
-func getPuppies(w http.ResponseWriter, p *HomePage) {
+func getPuppies(w http.ResponseWriter, p *HomePage) string {
+	img_elem := ""
 	rest_url := endpoint + "&method=" + get_photos_method + "&api_key=" + api_key + "&text="+ tags + "&nojsoncallback=1&per_page=" + results_per_page
 	response, err := http.Get(rest_url)
 	if err != nil {
@@ -84,16 +96,6 @@ func getPuppies(w http.ResponseWriter, p *HomePage) {
 			fmt.Printf("%s", err)
 			os.Exit(1)
 		}
-
-		// Test data
-//		var testXML string = `
-//							<rsp>
-//								<photos>
-//									<photo id="99448848" owner="Landis"/>
-//									<photo id="43453534" owner="John"/>
-//								</photos>
-//							</rsp>
-//							`
 		data := &FlickrResponse{}
 		xml.Unmarshal(contents, data)
 		if(len(data.Photos) > 0) {
@@ -101,10 +103,13 @@ func getPuppies(w http.ResponseWriter, p *HomePage) {
 			for i := 0; i < len(photo_collection.Photo); i++ {
 				img_data := photo_collection.Photo[i];
 				img_url := "https://farm" + img_data.FarmId + ".staticflickr.com/" + img_data.ServerId + "/" + img_data.Id + "_" + img_data.Secret + "_q.jpg"
-				fmt.Println(img_url)
-				img_elem := "<img src='" + img_url + "'>"
-				fmt.Fprint(w, img_elem)
+				img_elem += "<div class='puppy-image-container'>"
+				img_elem += "<img src='" + img_url + "' class='puppy-box' img_id='"+ img_data.Id +"'>"
+				img_elem += "<div class='puppy-image-upvote' style='display:none;'></div>"
+				img_elem += "<div class='puppy-image-downvote' style='display:none;'></div>"
+				img_elem += "</div>"
 			}
 		}
 	}
+	return img_elem
 }
