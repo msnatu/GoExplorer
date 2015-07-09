@@ -499,3 +499,35 @@ body {
 .puppy-image-container:hover .puppy-box {
   opacity: 0.5;
 }
+
+.puppy-image-upvote-info {
+  background: #fff;
+  border-radius: 35px;
+  bottom: 40px;
+  color: #f99;
+  font-family: "Comic Sans MS", sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  height: 35px;
+  left: 2px;
+  line-height: 34px;
+  position: absolute;
+  text-align: center;
+  width: 35px;
+}
+
+.puppy-image-downvote-info {
+  background: #fff;
+  border-radius: 35px;
+  bottom: 40px;
+  color: #f99;
+  font-family: "Comic Sans MS", sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  height: 35px;
+  right: 2px;
+  line-height: 34px;
+  position: absolute;
+  text-align: center;
+  width: 35px;
+}
