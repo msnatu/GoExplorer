@@ -531,3 +531,17 @@ body {
   text-align: center;
   width: 35px;
 }
+
+.sort-btn {
+  position: fixed;
+  top: 130px;
+  right: 10px;
+  padding: 10px;
+  background: #49afcd;
+  font-size: 13px;
+  font-family: puppy, sans-serif;
+  border-radius: 5px;
+  border: 1px solid #a0a0a0;
+  cursor: pointer;
+  font-weight: bold;
+}

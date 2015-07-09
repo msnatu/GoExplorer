@@ -17,7 +17,7 @@ const (
 	endpoint = "https://api.flickr.com/services/rest/?"
 	get_photos_method = "flickr.photos.search"
 	api_key = "4ef2fe2affcdd6e13218f5ddd0e2500d"
-	results_per_page = "10"
+	results_per_page = "200"
 	tags = "cute+puppies"
 )
 
@@ -44,10 +44,7 @@ type HomePage struct {
 	Body  string
 }
 
-var page_templates = template.Must(template.ParseFiles(
-	"./tpl/head.html",
-	"./tpl/page_body.html"))
-
+var page_templates = template.Must(template.ParseFiles("./tpl/head.html", "./tpl/page_body.html"))
 
 /********************************************************/
 
@@ -97,13 +94,21 @@ func getPuppies(w http.ResponseWriter, p *HomePage) string {
 				img_data := photo_collection.Photo[i]
 				img_url := "https://farm" + img_data.FarmId + ".staticflickr.com/" + img_data.ServerId + "/" + img_data.Id + "_" + img_data.Secret + "_q.jpg"
 				existing_votes := getImageVotes(img_data.Id)
+				up_vote := "0"
+				down_vote := "0"
+				if existing_votes[0] != "" {
+					up_vote = existing_votes[0]
+				}
+				if existing_votes[1] != "" {
+					down_vote = existing_votes[1]
+				}
 
 				img_elem += "<div class='puppy-image-container' img_id='"+ img_data.Id +"'>"
 				img_elem += "<img src='" + img_url + "' class='puppy-box'>"
 				img_elem += "<div class='puppy-image-upvote' style='display:none;'></div>"
-				img_elem += "<div class='puppy-image-upvote-info' style='display:none;'>" + existing_votes[0] +"</div>"
+				img_elem += "<div class='puppy-image-upvote-info' style='display:none;'>" + up_vote +"</div>"
 				img_elem += "<div class='puppy-image-downvote' style='display:none;'></div>"
-				img_elem += "<div class='puppy-image-downvote-info' style='display:none;'>" + existing_votes[1] +"</div>"
+				img_elem += "<div class='puppy-image-downvote-info' style='display:none;'>" + down_vote +"</div>"
 				img_elem += "</div>"
 			}
 		}
