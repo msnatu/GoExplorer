@@ -7,8 +7,8 @@ import (
 	"io/ioutil"
 	"os"
 	"encoding/xml"
-	"strings"
-	"bufio"
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 
@@ -63,15 +63,6 @@ func loadHomePage(w http.ResponseWriter, r *http.Request) {
 	puppies := getPuppies(w, p)
 	fmt.Fprintf(w, puppies)
 	renderTpl(w, "page_body", p)
-
-//	content, _ := ioutil.ReadFile("votes.txt")
-//	lines := strings.Split(string(content), "\n")
-//	fmt.Println(lines)
-//	f, err := os.OpenFile("votes.txt", os.O_APPEND|os.O_WRONLY, 0600)
-//	defer f.Close()
-//	if _, err = f.WriteString("\neppudi"); err != nil {
-//		panic(err)
-//	}
 }
 
 func renderTpl(w http.ResponseWriter, tmpl string, p *HomePage) {
@@ -101,9 +92,13 @@ func getPuppies(w http.ResponseWriter, p *HomePage) string {
 		if(len(data.Photos) > 0) {
 			photo_collection := data.Photos[0]
 			for i := 0; i < len(photo_collection.Photo); i++ {
-				img_data := photo_collection.Photo[i];
+				img_data := photo_collection.Photo[i]
 				img_url := "https://farm" + img_data.FarmId + ".staticflickr.com/" + img_data.ServerId + "/" + img_data.Id + "_" + img_data.Secret + "_q.jpg"
-				img_elem += "<div class='puppy-image-container'>"
+
+				existing_votes := getImageVotes(img_data.Id)
+				fmt.Println(existing_votes)
+
+				img_elem += "<div class='puppy-image-container' up_vote='" + existing_votes[0] +"' down_vote='" + existing_votes[1] + "'>"
 				img_elem += "<img src='" + img_url + "' class='puppy-box' img_id='"+ img_data.Id +"'>"
 				img_elem += "<div class='puppy-image-upvote' style='display:none;'></div>"
 				img_elem += "<div class='puppy-image-downvote' style='display:none;'></div>"
@@ -112,4 +107,30 @@ func getPuppies(w http.ResponseWriter, p *HomePage) string {
 		}
 	}
 	return img_elem
+}
+
+func getImageVotes(img_id string) []string {
+	db, err := sql.Open("mysql", "root:p@ssw0rd@tcp(127.0.0.1:3306)/puppies")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer db.Close()
+
+	var (
+		id int
+		image_id int
+		up_vote string
+		down_vote string
+	)
+	rows, _ := db.Query("SELECT * FROM votes WHERE image_id = ?", img_id)
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&id, &image_id, &up_vote, &down_vote)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(id, image_id)
+	}
+
+	return []string{up_vote, down_vote}
 }

@@ -472,6 +472,8 @@ body {
 .puppy-box {
   display: block;
   border-radius: 5px;
+  width: 150px;
+  height: 150px;
 }
 
 .puppy-image-upvote {
